@@ -1,0 +1,111 @@
+@startuml
+package "Приложение по имитации работы биржи труда " {
+class Main {
+    +main() : void <<Точка входа>>
+}
+note right of Main
+    Основной класс программы, запускает точку входа main(),
+    инициирует цикл аутентификации и вызывает отображение меню.
+end note
+
+class UserClass {
+    +initializeUsers() : void <<Инициализирует список пользователей>>
+    +size() : int <<Возвращает количество пользователей>>
+    +get(index: int) : User <<Получение пользователя по индексу>>
+}
+note right of UserClass
+    Создаёт и инициализирует коллекцию пользователей
+    перед началом процесса аутентификации
+end note
+
+class User {
+    +authenticate(username: String, password: String) : boolean <<Проверка подлинности пользователя>>
+    +getMenu() : Menu <<Возвращение соответствующего меню>>
+    +getId() : int <<Возвращение уникального идентификатора пользователя>>
+}
+note right of User
+    Возвращает подходящий тип меню для пользователя
+     (администратор или обычный пользователь)
+end note
+
+
+class UserLogger {
+    #static userId : int <<Хранит идентификатор текущего пользователя>>
+    +getId() : int <<Возвращение значения идентификатора пользователя>>
+    +UserLogger(userId: int) <<Конструктор для установки идентификатора>>
+}
+class MenuUser {
+ +void show(): Показывает меню пользователя
+}
+class UserMenuAdmin {
+  #static void show(): Отображение меню пользователя
+  -private void printMenu(): Выводит пункты меню
+  +static void resume(): Создание или обновление резюме
+  -private static void removeResume(List<String[]> resumes, int id): Удаляет существующее резюме по ID
+  -private static void addNewResume(List<String[]> resumes, int id, String... fields): Добавляет новое резюме
+  -private static void writeResumes(List<String[]> resumes): Записывает все резюме обратно в файл
+}
+
+
+class ResumeReader {
+  +static void viewAllResume(int userId): Показывает резюме  пользователя
+}
+
+class Resume {
+  +int id: Уникальный идентификатор резюме
+  +String name: Имя соискателя
+  +String contact: Контактные данные соискателя
+  +String post: Ранее занимаемая должность
+  +String experience: Опыт работы
+  +String duties: Основные должностные обязанности
+}
+
+class MenuAdmin {
+  +void show(): Отображает основное меню администратора
+ }
+ class AdminMenuAdmin {
+   #static void show(): Показывает главное меню администратора
+   -private void printMenu(): Выводит пункты меню
+   +void vacancy(): Создает новую вакансию
+   +void deleteVacancy(): Удаляет выбранную вакансию
+ }
+
+ class VacancyReader {
+   +static void viewAllVacancies(): Показывает список всех существующих вакансий
+ }
+
+ class Vacancy {
+   +int id: Уникальный идентификатор вакансии
+   +String title: Заголовок вакансии
+   +String schedule: График работы
+   +String description: Полное описание должности
+   +String salary: Размер заработной платы
+ }
+
+class ResponseVacancy {
+    -static int counter : счетчик для уникального имени файлов
+
+    +static void viewVacancies(): Отображает список доступных вакансий
+    -static void saveVacancyFile(String[] vacancy): Сохраняет отклик на вакансию в файл
+    +static String addResumeCandidate(int userId): Добавляет резюме кандидата в отклик
+}
+class wievResponseVacancies {
++static void wievResponseVacanciesDirectory(): Отображает все отклики на вакансии
+}
+
+Main --> UserClass : Запуск инициализации пользователей
+UserClass --> User : Запуск определения какое меню отобразить пользователю
+User -l-> UserLogger : Сохранение ID текущего пользователя
+User --> MenuUser : Переход к меню пользователя
+User --> MenuAdmin : Переход к меню администратора
+MenuAdmin --> AdminMenuAdmin
+AdminMenuAdmin -r-> VacancyReader : Просмотр всех вакансий
+AdminMenuAdmin --> Vacancy : Создает объекты вакансий
+MenuUser --> UserMenuAdmin
+UserMenuAdmin -l-> ResumeReader : Просмотр созданного резюме
+UserMenuAdmin --> Resume : Создает объекты резюме
+UserMenuAdmin --> ResponseVacancy : Создает отклики на вакансию
+AdminMenuAdmin --> wievResponseVacancies : Просмотр откликов на вакансии
+}
+@enduml
+
